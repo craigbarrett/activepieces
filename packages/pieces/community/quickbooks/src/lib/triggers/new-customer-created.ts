@@ -15,6 +15,8 @@ export const newCustomerCreated = createTrigger({
     // implement webhook deletion logic
   },
   async run(context) {
+    // get verify tokenn fron dashboard
+    // on getting resp verify resp and return response body
     return [context.payload.body];
   },
 });
