@@ -20,7 +20,7 @@ const createCustomer = async (
 ) => {
   const request: HttpRequest = {
     method: HttpMethod.POST,
-    url: `${quickbooksCommons.baseUrl}/${realmId}/customer`,
+    url: `${quickbooksCommons.baseUrl}/v3/company/${realmId}/customer`,
     authentication: {
       type: AuthenticationType.BEARER_TOKEN,
       token: accessToken,
@@ -37,13 +37,7 @@ export const createACustomerAction = createAction({
   displayName: 'Create a customer',
   description: 'creates a customer by providing required details',
   props: {
-    realmId: Property.LongText({
-      displayName: 'Realm ID/ Company ID',
-      required: false,
-      description:
-        'Enter Company Id/realm ID that can be obtained from intuit Oauth Playground',
-      validators: [Validators.maxLength(20)],
-    }),
+    realmId: quickbooksCommons.realmId,
     email: Property.LongText({
       displayName: 'email id',
       required: true,
@@ -97,11 +91,19 @@ export const createACustomerAction = createAction({
     }),
   },
   async run({ propsValue, auth, store }) {
-    const getRealmId = await quickbooksCommons.getRealmId(
-      store,
-      propsValue.realmId
-    );
-
+    let getRealmId: string;
+    try {
+      getRealmId = await quickbooksCommons.getKeyValue(
+        store,
+        (auth as any)?.client_id,
+        'realmId',
+        propsValue.realmId
+      );
+    } catch (error) {
+      throw new Error(
+        'Plase provide realmId/company Id to move furthur, can be obtained by visiting https://developer.intuit.com/app/developer/playground'
+      );
+    }
     try {
       const requestBody = {
         PrimaryEmailAddr: {
@@ -128,10 +130,17 @@ export const createACustomerAction = createAction({
     }
   },
   async test({ auth, propsValue, store }) {
-    const getRealmId = await quickbooksCommons.getRealmId(
-      store,
-      propsValue.realmId
-    );
+    let getRealmId: string;
+    try {
+      getRealmId = await quickbooksCommons.getKeyValue(
+        store,
+        (auth as any)?.client_id,
+        'realmId',
+        propsValue.realmId
+      );
+    } catch (error) {
+      throw new Error('Plase provide realmId/company Id to move furthur');
+    }
     try {
       const requestBody = {
         PrimaryEmailAddr: {
@@ -150,11 +159,12 @@ export const createACustomerAction = createAction({
       };
       return await createCustomer(requestBody, getRealmId, auth.access_token);
     } catch (error) {
-      if (error instanceof HttpError) {
-        const errorBody = error.response.body as any;
-        throw new Error(errorBody['error']['message']);
-      }
-      throw error;
+      console.log('error hai: ', error);
+      // if (error instanceof HttpError) {
+      //   const errorBody = error.response.body as any;
+      //   throw new Error(errorBody['error']['message']);
+      // }
+      throw new Error('error in creating cutomer');
     }
   },
 });
