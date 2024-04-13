@@ -101,7 +101,7 @@ export const createACustomerAction = createAction({
       );
     } catch (error) {
       throw new Error(
-        'Plase provide realmId/company Id to move furthur, can be obtained by visiting https://developer.intuit.com/app/developer/playground'
+        'Please provide realmId/company Id to move furthur, can be obtained by visiting https://developer.intuit.com/app/developer/playground'
       );
     }
     try {
@@ -140,7 +140,7 @@ export const createACustomerAction = createAction({
       );
     } catch (error) {
       throw new Error(
-        'Plase provide realmId/company Id to move furthur, can be obtained by visiting https://developer.intuit.com/app/developer/playground'
+        'Please provide realmId/company Id to move furthur, can be obtained by visiting https://developer.intuit.com/app/developer/playground'
       );
     }
     try {
