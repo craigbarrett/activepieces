@@ -1,75 +1,65 @@
-import crypto from 'crypto'
 import {
   createTrigger,
   TriggerStrategy,
-  Property,
-  Validators,
+  OAuth2PropertyValue,
+  StaticPropsValue,
 } from '@activepieces/pieces-framework';
+import {
+  DedupeStrategy,
+  Polling,
+  pollingHelper,
+} from '@activepieces/pieces-common';
 import { quickbooksAuth } from '../..';
 import { quickbooksCommons } from '../common/common';
+
+const props = {
+  realmId: quickbooksCommons.realmId,
+};
+
+const polling: Polling<OAuth2PropertyValue, StaticPropsValue<typeof props>> = {
+  strategy: DedupeStrategy.TIMEBASED,
+  items: async ({ auth, store, propsValue, lastFetchEpochMS }) => {
+    const getRealmId = await quickbooksCommons.getKeyValue(
+      store,
+      (auth as any)?.client_id,
+      quickbooksCommons.REALM_ID_STRING,
+      propsValue.realmId
+    );
+
+    const customerItem = await quickbooksCommons.queryAcustomer(
+      getRealmId,
+      auth.access_token,
+      new Date(lastFetchEpochMS).toISOString()
+    );
+    return customerItem.Customer?.map((item: any) => ({
+      epochMilliSeconds: new Date(item['MetaData']['CreateTime']).getTime(),
+      data: item,
+    }));
+  },
+};
 
 export const newCustomerCreated = createTrigger({
   auth: quickbooksAuth,
   name: 'newCustomerCreated',
   displayName: 'new customer created',
   description: 'Triggers when a new customer is created',
-  props: {
-    realmId: quickbooksCommons.realmId,
-    verifierToken: quickbooksCommons.webhookVerifierToken,
+  props,
+  type: TriggerStrategy.POLLING,
+  onEnable: async (context) => {
+    const { store, auth, propsValue } = context;
+    await pollingHelper.onEnable(polling, { store, auth, propsValue });
+  },
+  onDisable: async (context) => {
+    const { store, auth, propsValue } = context;
+    await pollingHelper.onDisable(polling, { store, auth, propsValue });
+  },
+  run: async (context) => {
+    const { store, auth, propsValue } = context;
+    return await pollingHelper.poll(polling, { store, auth, propsValue });
+  },
+  test: async (context) => {
+    const { store, auth, propsValue } = context;
+    return await pollingHelper.test(polling, { store, auth, propsValue });
   },
   sampleData: {},
-  type: TriggerStrategy.WEBHOOK,
-  async onEnable(context) {
-    // implement webhook creation logic
-    // await context.store.put('KEY', 'VALUE', StoreScope.PROJECT);
-    let getVerifierToken: string;
-    try {
-      getVerifierToken = await quickbooksCommons.getKeyValue(
-        context.store,
-        (context.auth as any)?.client_id,
-        'verifierToken',
-        context.propsValue.verifierToken
-      );
-    } catch (error) {
-      throw new Error(
-        "'Enter Company Id/realm ID that can be obtained can be obtained by visiting https://developer.intuit.com/app/developer/playground'"
-      );
-    }
-  },
-  async onDisable(context) {
-    // implement webhook deletion logic
-  },
-  async run(context) {
-    // get verify tokenn fron dashboard
-    // on getting resp verify resp and return response body
-
-    return [context.payload.body];
-  },
-  async test(context) {
-    // var webhookPayload = JSON.stringify(req.body);
-    // console.log('The paylopad is :' + JSON.stringify(req.body));
-    // var signature = req.get('intuit-signature');
-
-    // var fields = ['realmId', 'name', 'id', 'operation', 'lastUpdated'];
-    // var newLine= "\r\n";
-
-    // // if signature is empty return 401
-    // if (!signature) {
-    //     return res.status(401).send('FORBIDDEN');
-    // }
-
-    // // if payload is empty, don't do anything
-    // if (!webhookPayload) {
-    //     return res.status(200).send('success');
-    // }
-
-    // /**
-    //  * Validates the payload with the intuit-signature hash
-    //  */
-    // var hash = crypto.createHmac('sha256', config.webhooksVerifier).update(webhookPayload).digest('base64');
-    // if (signature === hash) {
-    //     console.log("The Webhook notification payload is :" + webhookPayload);
-
-    return [context.payload.body];
-  }
 });
