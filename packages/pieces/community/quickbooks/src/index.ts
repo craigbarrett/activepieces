@@ -5,7 +5,7 @@ import { newCustomerCreated } from './lib/triggers/new-customer-created';
 export const quickbooksAuth = PieceAuth.OAuth2({
   description: '',
 
-  authUrl: 'https://appcenter.intuit.com/app/connect/oauth2/',
+  authUrl: 'https://appcenter.intuit.com/connect/oauth2',
   tokenUrl: 'https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer',
   required: true,
   scope: [
@@ -17,7 +17,6 @@ export const quickbooksAuth = PieceAuth.OAuth2({
     'address',
   ],
 });
-
 
 export const quickbooks = createPiece({
   displayName: 'QuickBooks',

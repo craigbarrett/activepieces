@@ -4,9 +4,17 @@ import {
   Property,
   Validators,
 } from '@activepieces/pieces-framework';
+import {
+  httpClient,
+  HttpMethod,
+  AuthenticationType,
+  HttpRequest,
+} from '@activepieces/pieces-common';
 
 export const quickbooksCommons = {
-  baseUrl: 'https://sandbox-quickbooks.api.intuit.com',
+  baseUrl: 'https://quickbooks.api.intuit.com',
+  REALM_ID_STRING: 'realmId',
+  VERIFIER_TOKEN_STRING: 'verifierToken',
   getKeyValue: async (
     store: Store,
     clientId: string,
@@ -14,7 +22,6 @@ export const quickbooksCommons = {
     value: string | undefined
   ) => {
     let getValue = await store.get<string>(clientId + key, StoreScope.PROJECT);
-    console.log('key: ', clientId + key);
     if (!getValue) {
       if (!value) {
         throw new Error('No value passed to store');
@@ -26,7 +33,6 @@ export const quickbooksCommons = {
       await store.put(clientId + key, value, StoreScope.PROJECT);
       getValue = value;
     }
-    console.log('getVal: ', getValue);
     return getValue;
   },
   realmId: Property.LongText({
@@ -36,10 +42,33 @@ export const quickbooksCommons = {
       'Enter Company Id/realm ID that can be obtained can be obtained by visiting https://developer.intuit.com/app/developer/playground',
     validators: [Validators.maxLength(20)],
   }),
-  webhookVerifierToken: Property.LongText({
-    displayName: 'Webhook Verifier Token',
-    required: false,
-    description:
-      'Enter Webhook Verifier Token, can be obtained by visiting https://developer.intuit.com/app/developer/dashboard then "App Name" => "Production Settings" => Webhooks and then entering your Public-URL of Ngrok',
-  }),
+  // webhookVerifierToken: Property.LongText({
+  //   displayName: 'Webhook Verifier Token',
+  //   required: false,
+  //   description:
+  //     'Enter Webhook Verifier Token and double check it, can be obtained by visiting https://developer.intuit.com/app/developer/dashboard then "App Name" => "Production Settings" => Webhooks and then entering your Public-URL of Ngrok',
+  // }),
+  queryAcustomer: async (
+    realmId: string,
+    accessToken: string,
+    lastFetchDateTime: string
+  ): Promise<QueryCustomerResponse> => {
+    const request: HttpRequest = {
+      method: HttpMethod.GET,
+      url: `${quickbooksCommons.baseUrl}/v3/company/${realmId}/query`,
+      authentication: {
+        type: AuthenticationType.BEARER_TOKEN,
+        token: accessToken,
+      },
+      queryParams: {
+        query: `select * from Customer Where Metadata.CreateTime > '${lastFetchDateTime}'`,
+      },
+    };
+    const response = await httpClient.sendRequest<{ value: object }>(request);
+    return (response.body as any)['QueryResponse'];
+  },
 };
+
+export interface QueryCustomerResponse {
+  Customer: any[];
+}
