@@ -96,7 +96,7 @@ export const createACustomerAction = createAction({
       getRealmId = await quickbooksCommons.getKeyValue(
         store,
         (auth as any)?.client_id,
-        'realmId',
+        quickbooksCommons.REALM_ID_STRING,
         propsValue.realmId
       );
     } catch (error) {
@@ -124,7 +124,7 @@ export const createACustomerAction = createAction({
     } catch (error) {
       if (error instanceof HttpError) {
         const errorBody = error.response.body as any;
-        throw new Error(errorBody['error']['message']);
+        throw new Error(JSON.stringify(errorBody['Fault']['Error']));
       }
       throw error;
     }
@@ -135,11 +135,13 @@ export const createACustomerAction = createAction({
       getRealmId = await quickbooksCommons.getKeyValue(
         store,
         (auth as any)?.client_id,
-        'realmId',
+        quickbooksCommons.REALM_ID_STRING,
         propsValue.realmId
       );
     } catch (error) {
-      throw new Error('Plase provide realmId/company Id to move furthur');
+      throw new Error(
+        'Plase provide realmId/company Id to move furthur, can be obtained by visiting https://developer.intuit.com/app/developer/playground'
+      );
     }
     try {
       const requestBody = {
@@ -159,12 +161,11 @@ export const createACustomerAction = createAction({
       };
       return await createCustomer(requestBody, getRealmId, auth.access_token);
     } catch (error) {
-      console.log('error hai: ', error);
-      // if (error instanceof HttpError) {
-      //   const errorBody = error.response.body as any;
-      //   throw new Error(errorBody['error']['message']);
-      // }
-      throw new Error('error in creating cutomer');
+      if (error instanceof HttpError) {
+        const errorBody = error.response.body as any;
+        throw new Error(JSON.stringify(errorBody['Fault']['Error']));
+      }
+      throw error;
     }
   },
 });
