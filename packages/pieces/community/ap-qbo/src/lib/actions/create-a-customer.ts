@@ -9,7 +9,7 @@ import {
   AuthenticationType,
   HttpRequest,
 } from '@activepieces/pieces-common';
-import { quickbooksAuth } from '../../';
+import { quickbooksAuth } from '../..';
 import { quickbooksCommons } from '../common/common';
 import { HttpError } from '@activepieces/pieces-common';
 
