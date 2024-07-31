@@ -450,8 +450,8 @@
       "@activepieces/piece-queue": [
         "packages/pieces/community/queue/src/index.ts"
       ],
-      "@activepieces/piece-quickbooks": [
-        "packages/pieces/community/quickbooks/src/index.ts"
+      "@activepieces/piece-ap-qbo": [
+        "packages/pieces/community/ap-qbo/src/index.ts"
       ],
       "@activepieces/piece-quickzu": [
         "packages/pieces/community/quickzu/src/index.ts"
