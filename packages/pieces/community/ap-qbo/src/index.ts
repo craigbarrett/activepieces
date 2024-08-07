@@ -1,6 +1,7 @@
 import { createPiece, PieceAuth } from '@activepieces/pieces-framework';
 import { createACustomerAction } from './lib/actions/create-a-customer';
 import { newCustomerCreated } from './lib/triggers/new-customer-created';
+import { createAnInvoiceAction } from './lib/actions/create-invoice';
 
 export const quickbooksAuth = PieceAuth.OAuth2({
   description: '',
@@ -24,6 +25,6 @@ export const quickbooks = createPiece({
   minimumSupportedRelease: '0.20.0',
   logoUrl: 'https://cdn.activepieces.com/pieces/quickbooks.png',
   authors: ['kumarvikramshahi'],
-  actions: [createACustomerAction],
+  actions: [createACustomerAction, createAnInvoiceAction],
   triggers: [newCustomerCreated],
 });

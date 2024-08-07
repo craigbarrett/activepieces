@@ -12,7 +12,8 @@ import {
 } from '@activepieces/pieces-common';
 
 export const quickbooksCommons = {
-  baseUrl: 'https://quickbooks.api.intuit.com',
+  // baseUrl: 'https://quickbooks.api.intuit.com',
+  baseUrl: 'https://sandbox-quickbooks.api.intuit.com',
   REALM_ID_STRING: 'realmId',
   VERIFIER_TOKEN_STRING: 'verifierToken',
   getKeyValue: async (
@@ -39,7 +40,7 @@ export const quickbooksCommons = {
     displayName: 'Realm ID/ Company ID',
     required: false,
     description:
-      'Enter Company Id/realm ID that can be obtained can be obtained by visiting https://developer.intuit.com/app/developer/playground',
+      'Enter Company Id/realm ID that can be obtained can be obtained by visiting https://developer.intuit.com/app/developer/playground, skip it if provided previously',
     validators: [Validators.maxLength(20)],
   }),
   // webhookVerifierToken: Property.LongText({
