@@ -82,7 +82,49 @@ export const createPaymentAction = createAction({
     }),
   },
   async run({ propsValue, auth, store }) {
-    return 'run';
+    let getRealmId: string;
+    try {
+      getRealmId = await quickbooksCommons.getKeyValue(
+        store,
+        (auth as any)?.client_id,
+        quickbooksCommons.REALM_ID_STRING,
+        propsValue.realmId
+      );
+    } catch (error) {
+      throw new Error(
+        'Please provide realmId/company Id to move furthur, can be obtained by visiting https://developer.intuit.com/app/developer/playground'
+      );
+    }
+    try {
+      const requestBody: RequestBody = {
+        TotalAmt: propsValue.totalAmt,
+        CustomerRef: {
+          value: propsValue.customerRefValue,
+          name: propsValue.customerRefName,
+        },
+      };
+      if (propsValue.projectRefValue) {
+        requestBody.ProjectRef = {
+          value: propsValue.projectRefValue,
+          name: propsValue.projectRefName,
+        };
+      }
+      if (propsValue.currencyRefValue) {
+        requestBody.CurrencyRef = {
+          value: propsValue.currencyRefValue,
+          name: propsValue.currencyRefName,
+        };
+      }
+      return await createPayment(requestBody, getRealmId, auth.access_token);
+    } catch (error) {
+      if (error instanceof HttpError) {
+        const errorBody = error.response.body as any;
+        if (errorBody['fault'])
+          throw new Error(JSON.stringify(errorBody['fault']['error']));
+        else throw new Error(JSON.stringify(errorBody['Fault']['Error']));
+      }
+      throw error;
+    }
   },
   async test({ propsValue, auth, store }) {
     let getRealmId: string;
@@ -122,7 +164,9 @@ export const createPaymentAction = createAction({
     } catch (error) {
       if (error instanceof HttpError) {
         const errorBody = error.response.body as any;
-        throw new Error(JSON.stringify(errorBody['Fault']['Error']));
+        if (errorBody['fault'])
+          throw new Error(JSON.stringify(errorBody['fault']['error']));
+        else throw new Error(JSON.stringify(errorBody['Fault']['Error']));
       }
       throw error;
     }

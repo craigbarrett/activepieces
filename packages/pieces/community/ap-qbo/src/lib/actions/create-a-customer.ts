@@ -124,7 +124,9 @@ export const createACustomerAction = createAction({
     } catch (error) {
       if (error instanceof HttpError) {
         const errorBody = error.response.body as any;
-        throw new Error(JSON.stringify(errorBody['Fault']['Error']));
+        if (errorBody['fault'])
+          throw new Error(JSON.stringify(errorBody['fault']['error']));
+        else throw new Error(JSON.stringify(errorBody['Fault']['Error']));
       }
       throw error;
     }
@@ -163,7 +165,9 @@ export const createACustomerAction = createAction({
     } catch (error) {
       if (error instanceof HttpError) {
         const errorBody = error.response.body as any;
-        throw new Error(JSON.stringify(errorBody['Fault']['Error']));
+        if (errorBody['fault'])
+          throw new Error(JSON.stringify(errorBody['fault']['error']));
+        else throw new Error(JSON.stringify(errorBody['Fault']['Error']));
       }
       throw error;
     }

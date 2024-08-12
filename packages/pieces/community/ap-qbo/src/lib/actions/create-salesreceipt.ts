@@ -69,7 +69,76 @@ export const createSalesReceiptAction = createAction({
     }),
   },
   async run({ auth, propsValue, store }) {
-    return '';
+    let getRealmId: string;
+    try {
+      getRealmId = await quickbooksCommons.getKeyValue(
+        store,
+        (auth as any)?.client_id,
+        quickbooksCommons.REALM_ID_STRING,
+        propsValue.realmId
+      );
+    } catch (error) {
+      throw new Error(
+        'Please provide realmId/company Id to move furthur, can be obtained by visiting https://developer.intuit.com/app/developer/playground'
+      );
+    }
+    const lineArrayValue = [];
+    const salesItemLineArray = propsValue.salesItemLine as SalesItemLine[];
+    for (let i = 0; i < salesItemLineArray.length; i++) {
+      lineArrayValue.push({
+        DetailType: 'SalesItemLineDetail',
+        Amount: salesItemLineArray[i].amount,
+        Description: salesItemLineArray[i].description,
+        SalesItemLineDetail: {
+          ItemRef: {
+            value: salesItemLineArray[i].itemRefValue,
+            name: salesItemLineArray[i].itemRefName,
+          },
+          DiscountAmt: salesItemLineArray[i].discountAmt,
+          ClassRef: {
+            value: salesItemLineArray[i].classRefValue,
+            name: salesItemLineArray[i].classRefName,
+          },
+          TaxCodeRef: {
+            value: salesItemLineArray[i].taxCodeRefValue,
+            name: salesItemLineArray[i].taxCodeRefName,
+          },
+          MarkupInfo: {
+            Percent: salesItemLineArray[i].percentMarkupInfo,
+            MarkUpIncomeAccountRef: {
+              name: salesItemLineArray[i].markUpIncomeAccountRefName,
+              value: salesItemLineArray[i].markUpIncomeAccountRefValue,
+            },
+          },
+          ItemAccountRef: {
+            name: salesItemLineArray[i].itemAccountRefName,
+            value: salesItemLineArray[i].itemAccountRefValue,
+          },
+          ServiceDate: salesItemLineArray[i].serviceDate,
+          DiscountRate: salesItemLineArray[i].discountRate,
+          Qty: salesItemLineArray[i].quantity,
+          UnitPrice: salesItemLineArray[i].unitPrice,
+        },
+      });
+    }
+    try {
+      const requestBody = {
+        Line: lineArrayValue,
+      };
+      return await createSalesReceipt(
+        requestBody,
+        getRealmId,
+        auth.access_token
+      );
+    } catch (error) {
+      if (error instanceof HttpError) {
+        const errorBody = error.response.body as any;
+        if (errorBody['fault'])
+          throw new Error(JSON.stringify(errorBody['fault']['error']));
+        else throw new Error(JSON.stringify(errorBody['Fault']['Error']));
+      }
+      throw error;
+    }
   },
   async test({ auth, propsValue, store }) {
     let getRealmId: string;
