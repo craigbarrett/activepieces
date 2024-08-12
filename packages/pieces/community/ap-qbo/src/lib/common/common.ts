@@ -10,11 +10,10 @@ import {
   AuthenticationType,
   HttpRequest,
 } from '@activepieces/pieces-common';
-import { string } from 'pg-format';
 
 export const quickbooksCommons = {
-  // baseUrl: 'https://quickbooks.api.intuit.com',
-  baseUrl: 'https://sandbox-quickbooks.api.intuit.com',
+  baseUrl: 'https://quickbooks.api.intuit.com',
+  // baseUrl: 'https://sandbox-quickbooks.api.intuit.com',
   REALM_ID_STRING: 'realmId',
   VERIFIER_TOKEN_STRING: 'verifierToken',
   getKeyValue: async (
