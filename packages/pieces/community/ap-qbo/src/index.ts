@@ -2,6 +2,10 @@ import { createPiece, PieceAuth } from '@activepieces/pieces-framework';
 import { createACustomerAction } from './lib/actions/create-a-customer';
 import { newCustomerCreated } from './lib/triggers/new-customer-created';
 import { createAnInvoiceAction } from './lib/actions/create-invoice';
+import { queryAnItemAction } from './lib/actions/query-an-item';
+import { queryAnyEntityAction } from './lib/actions/query-any-entity';
+import { createPaymentAction } from './lib/actions/create-payment';
+import { createSalesReceiptAction } from './lib/actions/create-salesreceipt';
 
 export const quickbooksAuth = PieceAuth.OAuth2({
   description: '',
@@ -25,6 +29,13 @@ export const quickbooks = createPiece({
   minimumSupportedRelease: '0.20.0',
   logoUrl: 'https://cdn.activepieces.com/pieces/quickbooks.png',
   authors: ['kumarvikramshahi'],
-  actions: [createACustomerAction, createAnInvoiceAction],
+  actions: [
+    createACustomerAction,
+    createAnInvoiceAction,
+    queryAnItemAction,
+    queryAnyEntityAction,
+    createPaymentAction,
+    createSalesReceiptAction,
+  ],
   triggers: [newCustomerCreated],
 });
