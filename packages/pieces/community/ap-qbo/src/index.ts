@@ -24,7 +24,7 @@ export const quickbooksAuth = PieceAuth.OAuth2({
 });
 
 export const quickbooks = createPiece({
-  displayName: 'ap-qbo',
+  displayName: 'QuickBooks Online',
   auth: quickbooksAuth,
   minimumSupportedRelease: '0.20.0',
   logoUrl: 'https://cdn.activepieces.com/pieces/quickbooks.png',
