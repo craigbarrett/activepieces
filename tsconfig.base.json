@@ -48,6 +48,12 @@
       "@activepieces/piece-aminos": [
         "packages/pieces/community/aminos/src/index.ts"
       ],
+      "@activepieces/piece-ap-guesty": [
+        "packages/pieces/community/ap-guesty/src/index.ts"
+      ],
+      "@activepieces/piece-ap-qbo": [
+        "packages/pieces/community/ap-qbo/src/index.ts"
+      ],
       "@activepieces/piece-apitable": [
         "packages/pieces/community/apitable/src/index.ts"
       ],
@@ -449,9 +455,6 @@
       ],
       "@activepieces/piece-queue": [
         "packages/pieces/community/queue/src/index.ts"
-      ],
-      "@activepieces/piece-ap-qbo": [
-        "packages/pieces/community/ap-qbo/src/index.ts"
       ],
       "@activepieces/piece-quickzu": [
         "packages/pieces/community/quickzu/src/index.ts"
