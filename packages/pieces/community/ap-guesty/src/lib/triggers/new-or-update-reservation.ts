@@ -5,7 +5,7 @@ import { guestyCommons } from '../common/common';
 export const newReservationTrigger = createTrigger({
   auth: guestyAuth,
   name: 'new_reservation',
-  displayName: 'New reservation',
+  displayName: 'New/Updated reservation',
   description: '',
   type: TriggerStrategy.WEBHOOK,
   props: {},
