@@ -21,7 +21,7 @@ export const guestyCommons = {
     }
     return getValue;
   },
-  doAuthentication: async (auth: A, store: Store) => {
+  getAccessToken: async (clientId: string, clientSecret: string) => {
     const myHeaders = new Headers();
     myHeaders.append('Accept', 'application/json');
     myHeaders.append('Content-Type', 'application/x-www-form-urlencoded');
@@ -29,8 +29,8 @@ export const guestyCommons = {
     const urlencoded = new URLSearchParams();
     urlencoded.append('grant_type', 'client_credentials');
     urlencoded.append('scope', 'open-api');
-    urlencoded.append('client_secret', auth.clientSecret);
-    urlencoded.append('client_id', auth.clientId);
+    urlencoded.append('client_secret', clientSecret);
+    urlencoded.append('client_id', clientId);
 
     const requestOptions = {
       method: 'POST',
@@ -43,11 +43,17 @@ export const guestyCommons = {
         'https://open-api.guesty.com/oauth2/token',
         requestOptions
       );
-      const respBody = request.json();
-      await store.put();
-      return true;
+      const responseBody = await request.json();
+      return responseBody as AuthResponse;
     } catch (error) {
-      console.log(error);
+      throw new Error(JSON.stringify(error));
     }
   },
 };
+
+export interface AuthResponse {
+  token_type: string;
+  expires_in: number;
+  access_token: string;
+  scope: string;
+}

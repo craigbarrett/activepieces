@@ -3,6 +3,8 @@ import {
   PieceAuth,
   Property,
 } from '@activepieces/pieces-framework';
+import { newReservationTrigger } from './lib/triggers/new-or-update-reservation';
+import { guestyCommons } from './lib/common/common';
 
 const authGuide = `
 To obtain your ActiveCampaign API URL and Key, follow these steps:
@@ -27,29 +29,10 @@ export const guestyAuth = PieceAuth.CustomAuth({
       required: true,
     }),
   },
-  validate: async ({ auth, propsValue }) => {
-    const myHeaders = new Headers();
-    myHeaders.append('Accept', 'application/json');
-    myHeaders.append('Content-Type', 'application/x-www-form-urlencoded');
-
-    const urlencoded = new URLSearchParams();
-    urlencoded.append('grant_type', 'client_credentials');
-    urlencoded.append('scope', 'open-api');
-    urlencoded.append('client_secret', auth.clientSecret);
-    urlencoded.append('client_id', auth.clientId);
-
-    const requestOptions = {
-      method: 'POST',
-      headers: myHeaders,
-      body: urlencoded,
-    };
-
+  validate: async ({ auth }) => {
     try {
-      const request = await fetch(
-        'https://open-api.guesty.com/oauth2/token',
-        requestOptions
-      );
-      const respBody = request.json();
+      await guestyCommons.getAccessToken(auth.clientId, auth.clientSecret);
+      // console.log(accessToken);
       return { valid: true };
     } catch (error) {
       return { valid: false, error: '' };
@@ -64,5 +47,5 @@ export const apGuesty = createPiece({
   logoUrl: 'https://cdn.activepieces.com/pieces/ap-guesty.png',
   authors: [],
   actions: [],
-  triggers: [],
+  triggers: [newReservationTrigger],
 });
