@@ -1,0 +1,38 @@
+{
+  "name": "pieces-ap-qbo",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/pieces/community/ap-qbo/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": [
+        "{options.outputPath}"
+      ],
+      "options": {
+        "outputPath": "dist/packages/pieces/community/ap-qbo",
+        "tsConfig": "packages/pieces/community/ap-qbo/tsconfig.lib.json",
+        "packageJson": "packages/pieces/community/ap-qbo/package.json",
+        "main": "packages/pieces/community/ap-qbo/src/index.ts",
+        "assets": [
+          "packages/pieces/community/ap-qbo/*.md"
+        ],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs pieces-ap-qbo {args.ver} {args.tag}",
+      "dependsOn": [
+        "build"
+      ]
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": [
+        "{options.outputFile}"
+      ]
+    }
+  },
+  "tags": []
+}

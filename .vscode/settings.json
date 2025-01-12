@@ -10,5 +10,6 @@
     },
     "editor.formatOnSave": false,
     "typescript.tsdk": "node_modules/typescript/lib",
-    "javascript.preferences.importModuleSpecifier": "relative",
+    "javascript.preferences.importModuleSpecifier": "project-relative",
+    "editor.formatOnSave": true
 }
